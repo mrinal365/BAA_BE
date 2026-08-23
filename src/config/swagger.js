@@ -145,6 +145,31 @@ const options = {
                 },
             },
             "/bookings": {
+                get: {
+                    tags: ["Bookings"],
+                    summary: "Retrieve user's paginated bookings (Client sees created bookings; Artist sees assigned bookings)",
+                    security: [{ BearerAuth: [] }],
+                    parameters: [
+                        {
+                            name: "page",
+                            in: "query",
+                            required: false,
+                            schema: { type: "integer", default: 1 },
+                            description: "The pagination page number",
+                        },
+                        {
+                            name: "limit",
+                            in: "query",
+                            required: false,
+                            schema: { type: "integer", default: 10 },
+                            description: "The maximum number of bookings per page",
+                        },
+                    ],
+                    responses: {
+                        200: { description: "Paginated bookings list successfully returned" },
+                        401: { description: "Unauthorized" },
+                    },
+                },
                 post: {
                     tags: ["Bookings"],
                     summary: "Submit a new booking request",
