@@ -253,6 +253,42 @@ const options = {
                         400: { description: "Invalid parameters" },
                     },
                 },
+                post: {
+                    tags: ["Reviews"],
+                    summary: "Submit a review for a completed booking with an artist",
+                    security: [{ BearerAuth: [] }],
+                    parameters: [
+                        {
+                            name: "id",
+                            in: "path",
+                            required: true,
+                            schema: { type: "string", format: "uuid" },
+                            description: "The unique UUID of the artist",
+                        },
+                    ],
+                    requestBody: {
+                        required: true,
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    required: ["bookingId", "score"],
+                                    properties: {
+                                        bookingId: { type: "string", format: "uuid", example: "8e36ad18-fb1b-4f51-a905-2420a3203f19" },
+                                        score: { type: "integer", minimum: 1, maximum: 5, example: 5 },
+                                        comment: { type: "string", example: "Spectacular performance!" },
+                                    },
+                                },
+                             },
+                        },
+                    },
+                    responses: {
+                        201: { description: "Review successfully submitted" },
+                        400: { description: "Validation failure (not completed, not matching, etc.)" },
+                        401: { description: "Unauthorized" },
+                        409: { description: "Booking has already been reviewed" },
+                    },
+                },
             },
         },
     },
