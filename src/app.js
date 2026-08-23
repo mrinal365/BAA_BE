@@ -4,6 +4,7 @@ import { ZodError } from 'zod';
 import authRoutes from './modules/auth/auth.routes.js';
 import bookingRoutes from './modules/booking/booking.routes.js';
 import artistRoutes from './modules/artist/artist.routes.js';
+import { requestLogger } from './middlewares/logger.js';
 
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.js';
@@ -13,6 +14,7 @@ dotenv.config();
 const app = express();
 
 app.use(express.json());
+app.use(requestLogger);
 
 // Health Check Route
 app.get('/health', (req, res) => {
