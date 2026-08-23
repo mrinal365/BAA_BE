@@ -1,5 +1,7 @@
 import Review from './review.model.js';
-import { findCompletedBookingIdsByArtist } from '../booking/booking.repository.js';
+import { findCompletedBookingIdsByArtist, verifyBookingForReview } from '../booking/booking.repository.js';
+import { createAppError } from '../../utils/appError.js';
+import { USER_ROLES } from '../../enums/user.js';
 
 export const getArtistReviews = async (artistId, page = 1, limit = 10) => {
   // 1. Fetch completed booking IDs from PostgreSQL for this artist
@@ -83,4 +85,36 @@ export const getArtistReviews = async (artistId, page = 1, limit = 10) => {
       totalReviews: totalCount,
     },
   };
+};
+
+export const addArtistReview = async (artistId, reviewData, actor) => {
+  if (actor.role !== USER_ROLES.CLIENT) {
+    throw createAppError('Only clients can submit reviews', 403);
+  }
+
+  const { bookingId, score, comment } = reviewData;
+
+  // Verify booking exists, is completed, and belongs to this client and artist
+  const booking = await verifyBookingForReview(bookingId, actor.id, artistId);
+  if (!booking) {
+    throw createAppError('You can only review an artist after a completed booking with them', 400);
+  }
+
+  if (booking.artist_role !== USER_ROLES.ARTIST) {
+    throw createAppError('Reviews can only be submitted for users with the artist role', 400);
+  }
+
+  // check if review already exist
+  const existingReview = await Review.findOne({ bookingId });
+  if (existingReview) {
+    throw createAppError('This booking has already been reviewed', 409);
+  }
+
+  return await Review.create({
+    bookingId,
+    artistId,
+    clientId: actor.id,
+    score,
+    comment,
+  });
 };

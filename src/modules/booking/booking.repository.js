@@ -98,3 +98,14 @@ export const getBookingsByUser = async (userId, limit, offset) => {
     total: parseInt(countRes.rows[0].count, 10),
   };
 };
+
+export const verifyBookingForReview = async (bookingId, clientId, artistId) => {
+  const query = `
+    SELECT b.*, u.role AS artist_role 
+    FROM bookings b
+    JOIN users u ON b.artist_id = u.id
+    WHERE b.id = $1 AND b.client_id = $2 AND b.artist_id = $3 AND b.status = 'completed';
+  `;
+  const res = await pool.query(query, [bookingId, clientId, artistId]);
+  return res.rows[0] || null;
+};
