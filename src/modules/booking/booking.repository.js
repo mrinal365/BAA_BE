@@ -52,3 +52,20 @@ export const createBookingRecord = async (bookingData) => {
   const res = await pool.query(query, values);
   return res.rows[0];
 };
+
+export const findBookingById = async (id) => {
+  const query = 'SELECT * FROM bookings WHERE id = $1;';
+  const res = await pool.query(query, [id]);
+  return res.rows[0] || null;
+};
+
+export const updateBookingStatus = async (id, status) => {
+  const query = `
+    UPDATE bookings 
+    SET status = $2, updated_at = CURRENT_TIMESTAMP
+    WHERE id = $1
+    RETURNING *;
+  `;
+  const res = await pool.query(query, [id, status]);
+  return res.rows[0];
+};
