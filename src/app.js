@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { ZodError } from 'zod';
 import authRoutes from './modules/auth/auth.routes.js';
 import bookingRoutes from './modules/booking/booking.routes.js';
+import artistRoutes from './modules/artist/artist.routes.js';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.get('/health', (req, res) => {
 // API Routes
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
+app.use('/api/v1/artists', artistRoutes);
 
 // Global Error Handler Middleware
 app.use((err, req, res, next) => {

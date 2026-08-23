@@ -69,3 +69,9 @@ export const updateBookingStatus = async (id, status) => {
   const res = await pool.query(query, [id, status]);
   return res.rows[0];
 };
+
+export const findCompletedBookingIdsByArtist = async (artistId) => {
+  const query = "SELECT id FROM bookings WHERE artist_id = $1 AND status = 'completed';";
+  const res = await pool.query(query, [artistId]);
+  return res.rows.map(row => row.id);
+};
