@@ -1,4 +1,5 @@
 import { findUserByEmail, createUser } from './auth.repository.js';
+import { createAppError } from '../../utils/appError.js';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 
@@ -13,7 +14,7 @@ export const signup = async (signupData) => {
   // 1. Check if user already exists
   const existingUser = await findUserByEmail(email);
   if (existingUser) {
-    throw new Error('Email is already registered');
+    throw createAppError('Email is already registered', 409);
   }
 
   // 2. Hash password
@@ -29,17 +30,17 @@ export const signup = async (signupData) => {
 
 export const login = async (loginData) => {
   const { email, password } = loginData;
-
+  
   // Find user by email
   const user = await findUserByEmail(email);
   if (!user) {
-    throw new Error('Invalid email or password');
+    throw createAppError('Invalid email or password', 401);
   }
 
   // Compare password hash
   const incomingHash = hashPassword(password);
   if (user.password_hash !== incomingHash) {
-    throw new Error('Invalid email or password');
+    throw createAppError('Invalid email or password', 401);
   }
 
   // Generate JWT token
