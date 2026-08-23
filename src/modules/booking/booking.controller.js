@@ -1,5 +1,5 @@
-import { createBooking, changeBookingStatus } from './booking.service.js';
-import { CreateBookingSchema, UpdateBookingStatusSchema } from './booking.schema.js';
+import { createBooking, changeBookingStatus, listBookings } from './booking.service.js';
+import { CreateBookingSchema, UpdateBookingStatusSchema, GetBookingsQuerySchema } from './booking.schema.js';
 import { createAppError } from '../../utils/appError.js';
 import { USER_ROLES } from '../../enums/user.js';
 
@@ -35,6 +35,24 @@ export const updateBookingStatusController = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       data: booking,
+      error: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getBookingsController = async (req, res, next) => {
+  try {
+    // 1. Validate query pagination inputs
+    const { page, limit } = GetBookingsQuerySchema.parse(req.query);
+
+    // 2. Query bookings filtered by logged-in user's id
+    const result = await listBookings(req.user.id, page, limit);
+
+    return res.status(200).json({
+      success: true,
+      data: result,
       error: null,
     });
   } catch (error) {

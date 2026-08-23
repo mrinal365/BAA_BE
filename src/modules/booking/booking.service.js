@@ -1,4 +1,4 @@
-import { checkBookingOverlap, createBookingRecord, findBookingById, updateBookingStatus } from './booking.repository.js';
+import { checkBookingOverlap, createBookingRecord, findBookingById, updateBookingStatus, getBookingsByUser } from './booking.repository.js';
 import { createAppError } from '../../utils/appError.js';
 import { BOOKING_STATUS } from '../../enums/booking.js';
 import { USER_ROLES } from '../../enums/user.js';
@@ -108,4 +108,21 @@ export const changeBookingStatus = async (id, newStatus, actor) => {
 
   // 6. Update booking status
   return await updateBookingStatus(id, newStatus);
+};
+
+export const listBookings = async (userId, page = 1, limit = 10) => {
+  const offset = (page - 1) * limit;
+
+  const { bookings, total } = await getBookingsByUser(userId, limit, offset);
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    bookings,
+    pagination: {
+      page,
+      limit,
+      totalPages,
+      totalBookings: total,
+    },
+  };
 };

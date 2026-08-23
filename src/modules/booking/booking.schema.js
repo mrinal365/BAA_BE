@@ -10,6 +10,11 @@ export const CreateBookingSchema = z.object({
 
 export const UpdateBookingStatusSchema = z.object({
   status: z.enum(Object.values(BOOKING_STATUS), {
-    errorMap: () => ({ message: `Status must be one of: ${Object.values(BOOKING_STATUS).join(', ')}` }),
+    invalid_type_error: `Status must be one of: ${Object.values(BOOKING_STATUS).join(', ')}`,
   }),
+});
+
+export const GetBookingsQuerySchema = z.object({
+  page: z.string().regex(/^\d+$/).transform(Number).default('1'),
+  limit: z.string().regex(/^\d+$/).transform(Number).default('10'),
 });

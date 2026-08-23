@@ -75,3 +75,26 @@ export const findCompletedBookingIdsByArtist = async (artistId) => {
   const res = await pool.query(query, [artistId]);
   return res.rows.map(row => row.id);
 };
+
+export const getBookingsByUser = async (userId, limit, offset) => {
+  const listQuery = `
+    SELECT * FROM bookings 
+    WHERE client_id = $1 OR artist_id = $1 
+    ORDER BY created_at DESC 
+    LIMIT $2 OFFSET $3;
+  `;
+  const countQuery = `
+    SELECT COUNT(*) FROM bookings 
+    WHERE client_id = $1 OR artist_id = $1;
+  `;
+
+  const [listRes, countRes] = await Promise.all([
+    pool.query(listQuery, [userId, limit, offset]),
+    pool.query(countQuery, [userId]),
+  ]);
+
+  return {
+    bookings: listRes.rows,
+    total: parseInt(countRes.rows[0].count, 10),
+  };
+};
