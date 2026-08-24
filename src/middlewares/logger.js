@@ -1,4 +1,7 @@
 export const requestLogger = (req, res, next) => {
+  if (process.env.NODE_ENV === 'test') {
+    return next();
+  }
   const start = process.hrtime();
 
   // async log 
