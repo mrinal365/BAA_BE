@@ -191,7 +191,7 @@ const options = {
                     },
                 },
             },
-            "/bookings/{id}": {
+            "/bookings/{id}/status": {
                 patch: {
                     tags: ["Bookings"],
                     summary: "Update the status of an existing booking",

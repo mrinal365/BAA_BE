@@ -6,6 +6,6 @@ const router = Router();
 
 router.get('/', requireAuth, getBookingsController);
 router.post('/', requireAuth, createBookingController);
-router.patch('/:id', requireAuth, updateBookingStatusController);
+router.patch('/:id/status', requireAuth, updateBookingStatusController);
 
 export default router;
