@@ -1,12 +1,7 @@
 import { findUserByEmail, createUser } from './auth.repository.js';
 import { createAppError } from '../../utils/appError.js';
-import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-
-// Secure SHA-256 password hashing helper
-export const hashPassword = (password) => {
-  return crypto.createHash('sha256').update(password).digest('hex');
-};
 
 export const signup = async (signupData) => {
   const { email, password, role } = signupData;
@@ -17,8 +12,8 @@ export const signup = async (signupData) => {
     throw createAppError('Email is already registered', 409);
   }
 
-  // 2. Hash password
-  const passwordHash = hashPassword(password);
+  // 2. Hash password using bcryptjs
+  const passwordHash = await bcrypt.hash(password, 10);
 
   // 3. Create user in database
   return await createUser({
@@ -37,9 +32,9 @@ export const login = async (loginData) => {
     throw createAppError('Invalid email or password', 401);
   }
 
-  // Compare password hash
-  const incomingHash = hashPassword(password);
-  if (user.password_hash !== incomingHash) {
+  // Compare password using bcryptjs
+  const isMatch = await bcrypt.compare(password, user.password_hash);
+  if (!isMatch) {
     throw createAppError('Invalid email or password', 401);
   }
 

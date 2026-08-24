@@ -2,12 +2,19 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { ZodError } from 'zod';
 import authRoutes from './modules/auth/auth.routes.js';
+import bookingRoutes from './modules/booking/booking.routes.js';
+import artistRoutes from './modules/artist/artist.routes.js';
+import { requestLogger } from './middlewares/logger.js';
+
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './config/swagger.js';
 
 dotenv.config();
 
 const app = express();
 
 app.use(express.json());
+app.use(requestLogger);
 
 // Health Check Route
 app.get('/health', (req, res) => {
@@ -23,6 +30,11 @@ app.get('/health', (req, res) => {
 
 // API Routes
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/bookings', bookingRoutes);
+app.use('/api/v1/artists', artistRoutes);
+
+// Swagger 
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Global Error Handler Middleware
 app.use((err, req, res, next) => {
@@ -41,7 +53,7 @@ app.use((err, req, res, next) => {
 
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
-  
+
   return res.status(statusCode).json({
     success: false,
     data: {},
