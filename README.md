@@ -9,8 +9,8 @@ A robust, production-grade backend system for booking artists and reviewing comp
 ### 1. Prerequisites
 Ensure you have the following installed on your machine:
 *   [Node.js](https://nodejs.org/) (v16+ recommended)
-*   [PostgreSQL](https://www.postgresql.org/) database
-*   [MongoDB](https://www.mongodb.com/) database
+*   [PostgreSQL](https://www.postgresql.org/) database - create a db named 'baa'
+*   [MongoDB](https://www.mongodb.com/) database - create a db named 'baa'
 
 ### 2. Installation
 Clone the repository and install dependencies:
